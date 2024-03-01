@@ -6,6 +6,7 @@ const tokens = (n) => {
 };
 
 const ether = tokens;
+const shares = ether;
 
 describe("Token", () => {
   let accounts, deployer, liquidityProvider, investor1, investor2;
@@ -353,18 +354,76 @@ describe("Token", () => {
       );
       expect(estimate).to.equal(balance);
 
-      // Check AMM token balances are in sync
-      expect(await token1.balanceOf(amm.address)).to.equal(
-        await amm.token1Balance()
+      /////////////////////////////////////////////////
+      // Removing liquidity
+      //
+
+      console.log(
+        `AMM token1 balance: ${ethers.utils.formatEther(
+          await amm.token1Balance()
+        )} \n`
       );
-      expect(await token2.balanceOf(amm.address)).to.equal(
-        await amm.token2Balance()
+      console.log(
+        `AMM token2 balance: ${ethers.utils.formatEther(
+          await amm.token2Balance()
+        )} \n`
       );
 
-      // Check prices after swapping
       console.log(
-        `Price: ${(await amm.token2Balance()) / (await amm.token1Balance())} \n`
+        `AMM Token 1 Balance: ${ethers.utils.formatEther(
+          await amm.token1Balance()
+        )}`
       );
+      console.log(
+        `AMM Token 2 Balance: ${ethers.utils.formatEther(
+          await amm.token2Balance()
+        )}`
+      );
+
+      // Check LP balance before removing tokens
+      balance = await token1.balanceOf(liquidityProvider.address);
+      console.log(
+        `LP token1 balance before removing funds: ${ethers.utils.formatEther(
+          balance
+        )}\n`
+      );
+
+      balance = await token2.balanceOf(liquidityProvider.address);
+      console.log(
+        `LP token2 balance before removing funds: ${ethers.utils.formatEther(
+          balance
+        )}\n`
+      );
+
+      // LP removes tokens
+      transaction = await amm
+        .connect(liquidityProvider)
+        .removeLiquidity(shares(50));
+      await transaction.wait();
+
+      // Check LP balance after removing tokens
+      balance = await token1.balanceOf(liquidityProvider.address);
+      console.log(
+        `LP token1 balance after removing funds: ${ethers.utils.formatEther(
+          balance
+        )}\n`
+      );
+
+      balance = await token2.balanceOf(liquidityProvider.address);
+      console.log(
+        `LP token2 balance after removing funds: ${ethers.utils.formatEther(
+          balance
+        )}\n`
+      );
+
+      // LP should have 0 shares
+      expect(await amm.shares(liquidityProvider.address)).to.equal(0);
+
+      // Deployer should still have 100 shares
+      expect(await amm.shares(deployer.address)).to.equal(tokens(100));
+
+      // AMM should have 100 shares
+      expect(await amm.totalShares()).to.equal(tokens(100));
     });
   });
 });

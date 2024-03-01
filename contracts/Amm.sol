@@ -7,8 +7,8 @@ import "./Token.sol";
 
 // [x] Manage Pool
 // [x] Manage Deposits 
-// [] Facilitate Swaps (i.e. trades)
-// [] Manage Withdraws 
+// [x] Facilitate Swaps (i.e. trades)
+// [x] Manage Withdraws 
 
 contract AMM {
   Token public token1;
@@ -170,6 +170,34 @@ contract AMM {
       token2Balance,
       block.timestamp
     );
+  }
+
+  // Determine how many tokens will be withdrawn
+  function calculateWithdrawAmount(uint256 _share) 
+  public view returns
+  (uint256 token1Amount, uint256 token2Amount) {
+    require(_share <= totalShares, "must be less than total shares");
+    token1Amount = (_share * token1Balance) / totalShares;
+    token2Amount = (_share * token2Balance) / totalShares; 
+  }
+
+  // Removes Liquidity from the pool
+  function removeLiquidity(uint256 _share) 
+  external returns
+  (uint256 token1Amount, uint256 token2Amount) {
+    require(_share <= shares[msg.sender], "cannot withdraw more than you have");
+    (token1Amount, token2Amount) = calculateWithdrawAmount(_share);
+
+    // Update the shares mapping
+    shares[msg.sender] -= _share;
+    totalShares -= _share;
+
+    token1Balance -= token1Amount;
+    token2Balance -= token2Amount;
+    K = token1Balance * token2Balance;
+
+    token1.transfer(msg.sender, token1Amount);
+    token2.transfer(msg.sender, token2Amount);
   }
 
 }
