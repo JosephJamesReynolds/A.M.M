@@ -37,6 +37,9 @@ contract AMM {
     uint256 timeStamp
   );
 
+  event liquidityRemoved(address user, uint256 share, uint256 token1Balance, uint256 token2Balance, uint256 timeStamp);
+
+
   constructor(Token _token1, Token _token2) {
     token1 = _token1;
     token2 = _token2;
@@ -198,6 +201,9 @@ contract AMM {
 
     token1.transfer(msg.sender, token1Amount);
     token2.transfer(msg.sender, token2Amount);
+
+    // Emit the event
+    emit liquidityRemoved(msg.sender, _share, token1Balance, token2Balance, block.timestamp);
   }
 
 }

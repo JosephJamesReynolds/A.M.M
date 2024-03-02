@@ -401,6 +401,60 @@ describe("Token", () => {
         .removeLiquidity(shares(50));
       await transaction.wait();
 
+      // Test for event for liquidity removal
+      await expect(transaction)
+        .to.emit(amm, "liquidityRemoved")
+        .withArgs(
+          liquidityProvider.address,
+          shares(50),
+          await amm.token1Balance(),
+          await amm.token2Balance(),
+          (
+            await ethers.provider.getBlock(
+              await ethers.provider.getBlockNumber()
+            )
+          ).timestamp
+        );
+
+      // const tx = await transaction;
+
+      // // Wait for it to be mined and get the receipt
+      // const receipt = await tx.wait();
+
+      // // Find the liquidityRemoved event in the logs
+      // const event = receipt.events?.find((e) => e.event === "liquidityRemoved");
+
+      // // If the event exists, log its arguments
+      // if (event) {
+      //   console.log("liquidityRemoved event args:", event.args);
+      // } else {
+      //   console.log("liquidityRemoved event not found");
+      // }
+
+      // if (event) {
+      //   console.log(
+      //     "liquidityRemoved event args:",
+      //     event.args.map((arg) => arg.toString())
+      //   );
+
+      //   console.log("liquidityProvider address:", event.args[0]);
+      //   console.log("shares:", ethers.utils.formatUnits(event.args[1], "wei"));
+      //   console.log(
+      //     "token1Balance:",
+      //     ethers.utils.formatUnits(event.args[2], "wei")
+      //   );
+      //   console.log(
+      //     "token2Balance:",
+      //     ethers.utils.formatUnits(event.args[3], "wei")
+      //   );
+      //   console.log(
+      //     "timestamp:",
+      //     new Date(event.args[4].toNumber() * 1000).toLocaleString()
+      //   );
+      // } else {
+      //   console.log("liquidityRemoved event not found");
+      // }
+
       // Check LP balance after removing tokens
       balance = await token1.balanceOf(liquidityProvider.address);
       console.log(
