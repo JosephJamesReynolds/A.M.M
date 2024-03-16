@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+// import { act } from "react-dom/test-utils";
 
 export const amm = createSlice({
   name: "amm",
@@ -6,6 +7,11 @@ export const amm = createSlice({
     contract: null,
     shares: 0,
     swaps: [],
+    swapping: {
+      isSwapping: false,
+      isSuccess: false,
+      transactionHash: null,
+    },
   },
   reducers: {
     setContract: (state, action) => {
@@ -14,9 +20,25 @@ export const amm = createSlice({
     sharesLoaded: (state, action) => {
       state.shares = action.payload;
     },
+    swapRequest: (state, action) => {
+      state.swapping.isSwapping = true;
+      state.swapping.isSuccess = false;
+      state.swapping.transactionHash = null;
+    },
+    swapSuccess: (state, action) => {
+      state.swapping.isSwapping = false;
+      state.swapping.isSuccess = true;
+      state.swapping.transactionHash = action.payload;
+    },
+    swapFail: (state, action) => {
+      state.swapping.isSwapping = false;
+      state.swapping.isSuccess = false;
+      state.swapping.transactionHash = null;
+    },
   },
 });
 
-export const { setContract, sharesLoaded } = amm.actions;
+export const { setContract, sharesLoaded, swapRequest, swapSuccess, swapFail } =
+  amm.actions;
 
 export default amm.reducer;
