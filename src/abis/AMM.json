@@ -63,7 +63,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "timeStamp",
+        "name": "timestamp",
         "type": "uint256"
       }
     ],
@@ -100,7 +100,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "timeStamp",
+        "name": "timestamp",
         "type": "uint256"
       }
     ],

@@ -34,10 +34,10 @@ contract AMM {
     uint256 tokenGetAmount,
     uint256 token1Balance,
     uint256 token2Balance,
-    uint256 timeStamp
+    uint256 timestamp
   );
 
-  event liquidityRemoved(address user, uint256 share, uint256 token1Balance, uint256 token2Balance, uint256 timeStamp);
+  event liquidityRemoved(address user, uint256 share, uint256 token1Balance, uint256 token2Balance, uint256 timestamp);
 
 
   constructor(Token _token1, Token _token2) {
